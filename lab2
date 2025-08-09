@@ -1,0 +1,6 @@
+syms x
+f(x)=exp(x)
+taylor(f(x),x,'order',10)
+factorial(0:9)
+
+

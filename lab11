@@ -1,0 +1,107 @@
+function h = Romberg(f,a,b,n)
+    
+    T=NaN(n);
+
+    for i=1:n
+        T(i,1)=repeated_trapesium(f,a,b,2^(i-1));
+        for j=2:i
+            T(i,j)=(4^(j-1) * T(i,j-1) - T(i-1,j-1)) / (4 ^ (j-1)-1);
+        end
+    end
+end
+
+function area = repeated_trapesium(f, a, b, n)
+    h=(b-a)/n;
+    m=a+h/2:h:b-h/2;
+    x=a+h:h:b-h;
+    area=h/2 * (2*sum(f(x) + f(a) +  f(b)));
+end
+
+function [I,i]=romberg_rec(f,a,b,err,NrmaxIter)
+    T=zeros(2);
+    i = 1;
+    while true
+        if (i > 2 && abs(T(end-1,end-1) - T(end,end)) < err)||i>NrmaxIter
+            I=T(end,end);
+            return;
+        end
+        T(i,1)=repeated_trapesium(f,a,b,2^(i-1));
+        for j = 2:i
+            T(i,j)=(4^(j-1) * T(i,j-1) - T(i-1,j-1)) / (4 ^ (j-1)-1);
+        end
+        i = i + 1;
+    end
+end
+
+  f = @(x) 4./(1+x.^2);
+  a=0;
+  b=1;
+  n=5;
+  format long;
+
+  rec= romberg_rec(f,a,b,1e-6,n)
+
+function [I, g_nodes, g_coeff] = Gaussquad(f, n, g_type)
+% Gaussquad - generates Gaussian quadrature
+% computes nodes and coefficients, when alpha and beta are known
+% method - Jacobi matrix; e-values, e-vectors.
+% f - the function (WITHOUT the weight!)
+% n - number of nodes
+% g_type - type of Gaussian quadrature (for the 5 given in the table):
+% 1 is for Legendre, weight function = 1, interval [-1, 1];
+% 2 is for Chebyshev 1st, weight function = 1/sqrt(1 - x^2), interval [-1, 1];
+% 3 is for Chebyshev 2nd, weight function = sqrt(1 - x^2), interval [-1, 1];
+% 4 is for Laguerre, weight function = x^a *exp(-x), a > -1, interval [0, inf).
+% 5 is for Hermite, weight function = exp(-x^2), interval (-inf, inf).
+
+% Computation of alpha and beta coefficients
+    k=1:n-1;
+    alpha = zeros(n, 1);
+    switch g_type
+        case 1
+            beta = [2,(4-k.^(-2)).^(-1)];
+        case 2
+            % beta = [pi,1./2,ones(n-1,1)./4];
+            beta(1)=pi;
+            beta(2)=1/2;
+            beta(3:n)=1/4;
+        case 3
+            % beta = [pi./2,ones(n-1,1)./4];
+            beta(1) = pi;
+            beta(2:n) = 1/4;
+        case 4
+            a = 0; % for this example; in general, it can be any a > - 1
+            alpha = 2*(0:n-1)+a+1;
+            beta(1) = gamma(1+a);
+            beta(2:n)=k.*(k+a);
+        case 5
+            beta = [sqrt(pi),k./2];
+    end
+
+    % Set up the Jacobi matrix, find its e-values and e-vectors.
+    uld = sqrt(beta(2:end)); % upper and lower diagonal
+    J = diag(alpha)+diag(uld,1)+diag(uld,-1); % Jacobi matrix (triadiagonal)
+    [v, d] = eig(J); % e-values and e-vectors of J
+
+    % Find nodes and coefficients of Gaussian quadrature
+    g_nodes = diag(d);
+    g_coeff = beta(1) * v(1,:).^2;
+
+    % Compute approx. integral
+    I = g_coeff * f(g_nodes);
+end
+
+%4.a
+f = @(x) sin(x);
+
+[I, g_nodes, g_coeff] = Gaussquad(f, 10, 4)
+
+integral(@(x)exp(-x).*sin(x),0,Inf)
+
+%4.c
+f = @(x) sin(x.^2)
+
+[I, g_nodes, g_coeff] = Gaussquad(f, 5, 2)
+ 
+integral(@(x) sin(x.^2)./sqrt(1-x.^2),-1,1)
+

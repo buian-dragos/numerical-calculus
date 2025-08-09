@@ -1,0 +1,45 @@
+function L = LaGrangeInterp(x_nodes,y_data,x_interp)
+    n=length(x_nodes);
+    L=zeros(size(x_interp));
+    for k=1:length(x_interp)
+        for i = 1:n
+            l_i = prod(x_interp(k) - x_nodes([1:i-1, i+1:n]))/prod(x_nodes(i) - x_nodes([1:i-1, i+1:n]));
+            L(k) = L(k) + l_i * y_data(i);
+        end
+    end
+end
+
+x_nodes=[1,2,3]
+y_data=[2,4,6]
+
+L=@(X)LaGrangeInterp(x_nodes,y_data,X)
+
+L(10)
+
+f=@(x) (x+1) ./ (3*x.^2+2*x+1)
+fplot(f,[-2,4])
+
+x_nodes = linspace(-2,4,10)
+y_data = f(x_nodes)
+
+hold on
+plot(x_nodes,y_data,'p')
+
+L = @(x) LaGrangeInterp(x_nodes,y_data,x)
+fplot(L,[-2,4])
+
+x_nodes=1980:10:2020
+y_data=[4451,5287,6090,6970,7821]
+
+L = @(x) LaGrangeInterp(x_nodes,log(y_data),x)
+
+L([2005,2015])
+clf
+fplot(L,[1980,2020])
+
+nodes=[121,100,81,144]
+values=[11,10,9,12]
+LaGrangeInterp(nodes,values,118)
+sqrt(118)
+
+

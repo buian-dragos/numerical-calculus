@@ -1,0 +1,17 @@
+A=[10 7 8 7; 7 5 6 5; 8 6 10 9; 7 5 9 10]
+b=[32;23;33;31]
+x=A\b
+cond(A)
+
+bp=[32.1;22.9;33.2;30.9]
+xp=A\bp
+
+error_input=norm(b-bp,2)/norm(b)
+error_output=norm(x-xp,2)/norm(x,2)
+error_output/error_input
+cond(A,2)
+
+format long
+A=vander(1./(1:20))
+b=A*ones(20,1)
+A\b

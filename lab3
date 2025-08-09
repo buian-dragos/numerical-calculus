@@ -1,0 +1,65 @@
+f = @(x) 1 ./ (1 + x);
+
+x = [0, 1, 2];
+f_values = f(x)
+
+n = length(x);
+div_diff_s = nan(n, n);
+div_diff_s(:, 1) = f_values
+
+for j = 2:n
+    div_diff_s(1:(n-j+1),j) = (div_diff_s(2:(n-j+2),j-1) - div_diff_s(1:(n-j+1),j-1)) ...
+                                ./ (x(j:n) - x(1:(n-j+1)))';
+end
+div_diff_s
+.
+f = @(x) 1 ./ (1 + x);
+
+x = [0, 1, 2];
+f_values = f(x)
+
+n = length(x);
+div_diff_s = nan(n, n);
+div_diff_s(:, 1) = f_values
+
+for j = 2:n
+    div_diff_s(1:(n-j+1),j) = (div_diff_s(2:(n-j+2),j-1) - div_diff_s(1:(n-j+1),j-1)) ...
+                                ./ (x(j:n) - x(1:(n-j+1)))';
+end
+div_diff_s
+
+f = @(x) 1 ./ (1+x);
+x = [0, 0, 1, 1, 2, 2];
+df = @(x) -1 ./ (1 + x)^2;
+f = @(x) 1 ./ (1 + x);
+
+x = [0, 1, 2];
+f_values = f(x)
+
+n = length(x);
+div_diff_s = zeros(n, n);
+div_diff_s(:, 1) = f_values
+
+for j = 2:n
+    div_diff_s(1:(n-j+1),j) = (div_diff_s(2:(n-j+2),j-1) - div_diff_s(1:(n-j+1),j-1)) ...
+                                ./ (x(j:n) - x(1:(n-j+1)))';
+end
+div_diff_s
+
+n = 2*length(x);
+z = repelem(x,2);
+
+div_diff_s = nan(n, n);
+div_diff_s(:, 1) = repelem(f_values,2);
+
+df = @(x) -1 ./ (x+1)*2;
+der_values = df(x);
+
+div_diff_s(1:2:n-1,2) = der_values;
+div_diff_s(2:2:n-1,2) = diff(f_values) ./ diff(x);
+for j = 3:n
+    div_diff_s(1:(n-j+1),j) = (div_diff_s(2:(n-j+2),j-1) - div_diff_s(1:(n-j+1),j-1)) ...
+                                ./ (z(j:n) - z(1:(n-j+1)))';
+end
+div_diff_s
+

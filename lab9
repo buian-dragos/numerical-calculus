@@ -1,0 +1,105 @@
+function L = LaGrangeInterp(x_nodes,y_data,x_interp)
+    n=length(x_nodes);
+    L=zeros(size(x_interp));
+    for k=1:length(x_interp)
+        for i = 1:n
+            l_i = prod(x_interp(k) - x_nodes([1:i-1, i+1:n]))/prod(x_nodes(i) - x_nodes([1:i-1, i+1:n]));
+            L(k) = L(k) + l_i * y_data(i);
+        end
+    end
+end
+
+function T=dif_div_duble(x,f,df)
+T=NaN(2*length(x));
+z=repelem(x,2);
+T(:,1)=repelem(f,2);
+T(1:2:end,2)=df;
+T(2:2:end-2,2)=diff(f)./diff(x);
+ for j=3:length(z)
+   for i=1:length(z)+1-j
+      T(i,j)=(T(i+1,j-1)-T(i,j-1))/(z(i+j-1)-z(i));
+   end
+ end
+end
+    
+
+function [H,dH]=Hermite_interpolare(x,f,df,X)
+ T=dif_div_duble(x,f,df);
+ c=T(1,:);
+ z=repelem(x,2);
+ H=[];dH=[];
+ for k=1:length(X)
+   P=1; DP=0; H(k)=c(1); dH(k)=0;
+   for i=1:length(z)-1
+     DP=DP*(X(k)-z(i))+P;
+     P= P*(X(k)-z(i));
+     H(k)= H(k)+ c(i+1)*P;
+     dH(k)= dH(k)+c(i+1)*DP;
+   end
+ end
+end
+
+
+f=@(x) (x+1) ./ (3*x.^2+2*x+1)
+
+nodes=linspace(-2,4,7);
+
+values=f(nodes);
+
+X=linspace(-2,4,100);
+
+LG = LaGrangeInterp(nodes,values,X);
+
+syms x;
+
+df=matlabFunction(diff((x+1) ./ (3*x.^2+2*x+1)))
+
+herm_values=df(nodes)
+
+H = Hermite_interpolare(nodes,values,herm_values,X);
+
+S = spline(nodes,values,X);
+
+clf; hold on;
+grid on;
+
+plot(X,LG)
+plot(nodes,values,'*')
+
+plot(X,H)
+
+plot(X,S)
+    
+
+nodes=[-1,-1/2,0,1/2,1,3/2]
+
+f=@(x) x .* sin(pi .* x);
+values=f(nodes)
+
+X=linspace(-1,3/2,100);
+
+syms x;
+df = diff(x*sin(pi*x))
+subs(df,[1,sym(3)/2])
+
+S = spline(nodes,[-pi values -1],X)
+
+clf; hold on;
+grid on;
+
+plot(X,S)
+
+clf; hold on;
+grid on;
+
+for i=1:length(nodes)-1
+    xx=linspace(nodes(i),nodes(i+1),100);
+    temp=[nodes(i),nodes(i+1)];
+    DF = matlabFunction(df);
+    herm_temp = DF(temp)
+    values_temp = f(temp)
+
+    H = Hermite_interpolare(temp,values_temp,herm_temp,xx);
+
+    plot(xx,H)
+end

@@ -1,0 +1,110 @@
+syms x
+f(x)=exp(x)
+
+clf
+hold on
+
+fplot(f(x),[-3,3])
+
+
+for i = 1:4
+    a = taylor(f(x),x,'order',i + 1);
+    fplot(a,[-3,3])
+end
+
+
+T(x) = taylor(f(x),x,'order',10)
+format long
+double(T(1))
+exp(1)
+n = 0;
+while 3/factorial(n+1) >= 10^-6
+    n = n + 1;
+end 
+n
+
+
+syms x
+f(x)=exp(x)
+
+clf
+hold on
+
+fplot(f(x),[-pi,pi])
+
+
+for i = [3,5]
+    a = taylor(f(x),x,'order',i + 1);
+    fplot(a,[-pi,pi])
+end
+
+n=0;
+while (pi/5)^(2*n+1)/factorial(2*n+1) >= 10^-5
+    n = n + 1;
+end
+n
+
+
+T(x) = taylor(f(x),x,'order',2*n+1)
+format long
+aprox = double(T(pi/5))
+exact = sin(pi/5)
+
+abs(aprox - exact)
+
+n=0;
+while (10*pi/3)^(2*n+1)/factorial(2*n+1) >= 10^-5
+    n = n + 1;
+end
+n
+
+y = mod(10*pi/3, 2*pi);
+
+n=0;
+while y^(2*n+1)/factorial(2*n+1) >= 10^-5
+    n = n + 1;
+end
+n
+
+T(x) = taylor(f(x),x,'order',2*n+1)
+format long
+aprox = double(T(pi/5))
+exact = sin(pi/5)
+
+abs(aprox - exact)
+
+syms x
+f(x)=log(1 + x)
+
+clf
+hold on
+
+fplot(f(x),[-0.9,1])
+
+
+for i = [2,5]
+    a = taylor(f(x),x,'order',i);
+    fplot(a,[-0.9,1])
+end
+
+format long
+T(x) = taylor(f(x),x,'order',10^5)
+aprox = double(T(1))
+exact = log(2)
+
+abs(aprox - exact)
+
+f(x) = log(1-x);
+T(x) = taylor(f(x),x,'order',10);
+T(x) = taylor(log(1+x),x,'order',10);
+T(x) = taylor(log(1+x) - log(1-x),x,'order',10);
+
+solve((1+x)/(1-x) == 2)
+
+f(x) = log(1+x) - log(1-x);
+diff(f(x),x,5)
+
+
+
+
+

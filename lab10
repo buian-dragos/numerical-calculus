@@ -1,0 +1,88 @@
+syms x;
+int (1/x, 1, 2)
+
+
+grid on;
+fplot(1/x, [1,2]);
+axis([1 2 0 1]);
+
+function area = repeated_rectangle(f, a, b, n)
+    h=(b-a)/n;
+    m=a+h/2:h:b-h/2;
+    area=h*sum(f(m));
+end
+
+f=@(x) 1 ./ x;
+format long
+area1=repeated_rectangle(f,1,2,10)
+exact = log(2)
+error=abs(exact-area1)
+
+syms n positive;
+N= ceil(solve(1/(12 * n^2) == sym(1)/1000))
+
+diff(1/x,2)
+diff(1/x,4)
+
+area2=repeated_trapesium(f,1,2,13)
+exact = log(2)
+error=abs(exact-area2)
+
+syms n positive;
+N= ceil(solve(1/(12 * n^2) == sym(1)/1000))
+
+area3=simpson(f,1,2,2)
+exact = log(2)
+error=abs(exact-area3)
+
+syms n positive;
+N= ceil(double(solve(24/(2880 * n^4) == sym(1)/1000)))
+
+function area = repeated_trapesium(f, a, b, n)
+    h=(b-a)/n;
+    m=a+h/2:h:b-h/2;
+    x=a+h:h:b-h;
+    area=h/2 * (2*sum(f(x) + f(a) +  f(b)));
+end
+
+
+function area = simpson(f, a, b, n)
+    h=(b-a)/n;
+    m=a+h/2:h:b-h/2;
+    x=a+h:h:b-h;
+    area = h/6 * (f(a) + f(b) + 4*sum(f(m)) + 2*sum(f(x)));
+end
+
+f=@(x) (x.*exp(-x))./(x.^2+1)
+int((x.*exp(-x))./(x.^2+1),1,2)
+clf;
+fplot(1/x, [1,2]);
+
+for i=1:8
+    format long
+    area1=repeated_rectangle(f,0,1,2^i)
+    exact = integral(f,0,1)
+    error=abs(exact-area1)
+    
+    syms n positive;
+    N= ceil(solve(1/(12 * n^2) == sym(1)/1000))
+    
+    diff(1/x,2)
+    diff(1/x,4)
+    
+    area2=repeated_trapesium(f,0,1,2^i)
+    exact = integral(f,0,1)
+    error=abs(exact-area2)
+    
+    syms n positive;
+    N= ceil(solve(1/(12 * n^2) == sym(1)/1000))
+    
+    area3=simpson(f,0,1,2^i)
+    exact = integral(f,0,1)
+    error=abs(exact-area3)
+    
+    syms n positive;
+    N= ceil(double(solve(24/(2880 * n^4) == sym(1)/1000)))
+end
+
+

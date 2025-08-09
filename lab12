@@ -1,0 +1,64 @@
+function [c,i] = bisection(f, a, b, err)
+    i=0;
+    while abs(a-b)>err
+        i=i+1;
+        c=(a+b)/2;
+        if f(b)*f(c)>=0
+            b=c;
+        else
+            a=c;
+        end
+    end
+end
+
+function [c,i] = secant(f, a, b,err)
+    i=0;
+    while abs(a-b)>err
+        i=i+1;
+        c = b - f(b)*(b-a)/(f(b)-f(a));
+        a=b;
+        b=c;
+    end
+end
+
+function [c,i] = false_position(f, a, b, err)
+    i=0;
+    while abs(a-b)>err
+        i=i+1;
+        c=(a*f(b) - b*f(a))/(f(b)-f(a));
+        if f(b)*f(c)>=0
+            b=c;
+        else
+            a=c;
+        end
+    end
+end
+
+function [b,i] = newton(f,df, a,err)
+    i=0;
+    b=0;
+    while abs(f(b))>err
+        i=i+1;
+        b=a-f(a)/df(a);
+        a=b;
+    end
+end
+
+f = @(x) x - exp(-x);
+format long
+[x,i] = bisection(f,0,1,1e-10)
+f(x)
+
+[x,i] = false_position(f,0,1,1e-10)
+f(x)
+
+[x,i] = secant(f,0,1,1e-10)
+f(x)
+
+syms y;
+df = matlabFunction(diff(y - exp(-y)))
+
+[x,i] = newton(f,df,1,1e-10)
+f(x)
+
+
